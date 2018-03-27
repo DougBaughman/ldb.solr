@@ -31,6 +31,7 @@ public class PersonCrud {
         EntityManager entityManager = EntityManagerUtility.getEntityManager();
         entityManager.getTransaction().begin();
         entityManager.remove(entityManager.find(Person.class, id));
+        entityManager.getTransaction().commit();
         entityManager.close();
     }
 

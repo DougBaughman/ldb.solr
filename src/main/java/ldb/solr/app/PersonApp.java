@@ -15,12 +15,34 @@ public class PersonApp {
         return "George " + seq + " Washington";
     }
     public static void main(String[]args) throws IOException, SolrServerException {
+        PersonCrud crud = new PersonCrud();
+        SolrSearch search = new SolrSearch();
+
+        // Create a new person
         Person person = new Person();
         person.setName(genPersonName());
-        person = new PersonCrud().create(person);
+        person = crud.create(person);
         System.out.println("Created Person:  " + person);
 
-        List<SolrIndexed>searchedPeople = new SolrSearch().search(person.getName());
+        // Search for people using the new person's name as the search text
+        // Expect all people to be returned (since all have names like 'George * Washington' but the new person will be first
+        List<SolrIndexed>searchedPeople = search.search(person.getName());
+        searchedPeople.forEach(p->System.out.println("Search Result:  " + p));
+
+        // Update person with a new name
+        person.setName(genPersonName());
+        person = crud.update(person.getId(), person);
+        System.out.println( "Updated person:  " + person);
+
+        // Now search for people using the updated person's name as the search text
+        // Again, the updated person will be first in the list
+        searchedPeople = search.search(person.getName());
+        searchedPeople.forEach(p->System.out.println("Search Result:  " + p));
+
+        // Now delete the person and then search people
+        // The deleted person should not be in the search results.
+        crud.delete(person.getId());
+        searchedPeople = search.search(person.getName());
         searchedPeople.forEach(p->System.out.println("Search Result:  " + p));
 
         System.exit(0);
