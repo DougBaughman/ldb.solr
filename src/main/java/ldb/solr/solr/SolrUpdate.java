@@ -11,30 +11,24 @@ public class SolrUpdate extends SolrServer {
 
     @PostPersist
     @PostUpdate
-    public void onCreateUpdate( Object object){
-        if (object instanceof SolrIndexed) {
-            SolrIndexed indexed = (SolrIndexed) object;
-            SolrClient client = getSolrClient();
-            try {
-                client.addBean(indexed.getSolrDto());
-                client.commit();
-            } catch (IOException | SolrServerException e) {
-                e.printStackTrace();
-            }
+    public void onCreateUpdate( SolrIndexed indexed){
+        SolrClient client = getSolrClient();
+        try {
+            client.addBean(indexed.getSolrDto());
+            client.commit();
+        } catch (IOException | SolrServerException e) {
+            e.printStackTrace();
         }
     }
 
     @PostRemove
-    public void onDelete( Object object){
-        if (object instanceof SolrIndexed) {
-            SolrIndexed indexed = (SolrIndexed) object;
-            SolrClient client = getSolrClient();
-            try {
-                client.deleteById(indexed.getSolrDto().getId());
-                client.commit();
-            } catch (IOException | SolrServerException e) {
-                e.printStackTrace();
-            }
+    public void onDelete( SolrIndexed indexed){
+        SolrClient client = getSolrClient();
+        try {
+            client.deleteById(indexed.getSolrDto().getId());
+            client.commit();
+        } catch (IOException | SolrServerException e) {
+            e.printStackTrace();
         }
     }
 
