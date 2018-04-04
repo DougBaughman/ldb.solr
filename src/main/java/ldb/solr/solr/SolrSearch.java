@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 
 public class SolrSearch extends SolrServer {
     private EntityManager entityManager;
-    private final Function<String,SolrDto.SolrId>mapToSolrId = SolrDto.SolrId::new;
-    private final Function<SolrDto.SolrId, SolrIndexed>mapToSolrIndexed = solrId-> entityManager.find(solrId.getEntityClass(), solrId.getId());
 
 
     public List<SolrIndexed> search(String searchString) throws IOException, SolrServerException {
@@ -31,8 +29,8 @@ public class SolrSearch extends SolrServer {
         entityManager.getTransaction().begin();
         List<SolrIndexed> resultsList = documents.stream().
                 map(doc->(String)doc.get("id")).
-                map(mapToSolrId).
-                map(mapToSolrIndexed).
+                map(SolrDto.SolrId::new).
+                map( solrId-> entityManager.find(solrId.getEntityClass(), solrId.getId())).
                 collect(Collectors.toList());
         entityManager.close();
         return resultsList;
