@@ -16,22 +16,12 @@ public class SolrSearch extends SolrServer {
     private final Function<String,SolrDto.SolrId>mapToSolrId = SolrDto.SolrId::new;
     private final Function<SolrDto.SolrId, SolrIndexed>mapToSolrIndexed = solrId-> entityManager.find(solrId.getEntityClass(), solrId.getId());
 
-    private String buildQueryString( String value){
-        String[] tokens = value.split("\\s");
-        StringBuffer result = new StringBuffer();
-        for(String token : tokens){
-            result.append(String.format("name:%s ", token));
-        }
-
-        return result.toString();
-    }
-
 
     public List<SolrIndexed> search(String searchString) throws IOException, SolrServerException {
 
         final String[]fields = {"id"};
         SolrQuery query = new SolrQuery();
-        query.setQuery(buildQueryString(searchString));
+        query.setQuery(String.format("name:(%s)", searchString));
         query.setFields(fields);
         query.setSort("score", SolrQuery.ORDER.desc);
 
