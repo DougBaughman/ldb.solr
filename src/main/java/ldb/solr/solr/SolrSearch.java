@@ -12,8 +12,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SolrSearch extends SolrServer {
-    private EntityManager entityManager;
-
 
     public List<SolrIndexed> search(String searchString) throws IOException, SolrServerException {
 
@@ -25,7 +23,7 @@ public class SolrSearch extends SolrServer {
 
         SolrDocumentList documents = getSolrClient().query(query).getResults();
 
-        entityManager = EntityManagerUtility.getEntityManager();
+        EntityManager entityManager = EntityManagerUtility.getEntityManager();
         entityManager.getTransaction().begin();
         List<SolrIndexed> resultsList = documents.stream().
                 map(doc->(String)doc.get("id")).
